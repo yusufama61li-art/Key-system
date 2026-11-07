@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUSH | Key System</title>
+    <style>
+        body {
+            background-color: #0f0f14;
+            color: #e6ebff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: #191923;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(80, 200, 255, 0.2);
+            border: 1px solid #50c8ff;
+        }
+        h1 { color: #50c8ff; margin-bottom: 5px; }
+        p { color: #888; font-size: 14px; }
+        .key-box {
+            background-color: #2d2d3f;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #50ff96;
+            letter-spacing: 3px;
+            margin: 20px 0;
+            user-select: all;
+            cursor: pointer;
+        }
+        .timer { font-size: 14px; color: #ff5050; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 HUSH KEY SYSTEM</h1>
+        <p>Aşağıdaki şifreyi kopyalayıp hile menüsüne yapıştırın.</p>
+        
+        <div class="key-box" id="keyDisplay" onclick="copyKey()">Yükleniyor...</div>
+        
+        <div class="timer" id="timerDisplay">Kalan Süre: 4:00</div>
+        <p style="font-size:12px; margin-top:15px;">Tıkla ve kopyala</p>
+    </div>
+
+    <script>
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        function generateKey() {
+            // 4 dakika = 240 saniye. Zamana göre blok oluşturuyoruz.
+            let timeBlock = Math.floor(Date.now() / 240000); 
+            let key = "HUSH-";
+            
+            // Matematiksel olarak o anki şifreyi üretiyoruz
+            for (let i = 0; i < 6; i++) {
+                let index = (timeBlock + (i * 7)) % chars.length;
+                key += chars[index];
+            }
+            return key;
+        }
+
+        function updateUI() {
+            let key = generateKey();
+            document.getElementById("keyDisplay").innerText = key;
+            
+            // Geri sayım sayacı
+            let msLeft = 240000 - (Date.now() % 240000);
+            let mins = Math.floor(msLeft / 60000);
+            let secs = Math.floor((msLeft % 60000) / 1000);
+            document.getElementById("timerDisplay").innerText = `Yeni şifreye kalan: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function copyKey() {
+            let key = document.getElementById("keyDisplay").innerText;
+            navigator.clipboard.writeText(key);
+            document.getElementById("keyDisplay").style.color = "#ffffff";
+            setTimeout(() => { document.getElementById("keyDisplay").style.color = "#50ff96"; }, 200);
+        }
+
+        setInterval(updateUI, 1000);
+        updateUI();
+    </script>
+</body>
+</html>
